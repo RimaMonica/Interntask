@@ -1,0 +1,168 @@
+
+
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import torch
+    import torch.nn as nn
+    import torch.optim as optim
+
+    # Define the range of x-values
+    x_min = -10
+    x_max = 10
+
+    # Define the number of random points to generate
+    num_points = 200
+
+    # Generate random x-values
+    x = np.random.uniform(x_min, x_max, num_points)
+
+    # Calculate y-values using sinc function
+    y_sinc = np.sinc(x)
+
+    # Plot the random points TASK1
+    plt.scatter(x, y_sinc, c='blue', marker='o', label='Random Points')
+
+    # Plot the sinc function curve
+    x_curve = np.linspace(x_min, x_max, 1000)
+    y_curve = np.sinc(x_curve)
+    plt.plot(x_curve, y_curve, c='red', label='Sinc Function')
+
+    # Set plot properties
+    plt.xlabel('x')
+    plt.ylabel('y_sinc')
+    plt.title('Random Points Following Sinc Function')
+    plt.legend()
+
+    # Display the plot TASK2
+    plt.show()
+
+
+    # Generate random noise
+    noise = np.random.normal(0, 0.1, num_points)
+
+    # Add noise to the sinc function data
+    y_data = y_sinc + noise
+
+    # Convert noise to tensor format TASK3
+
+    noise_tensor = torch.from_numpy(noise).float()
+    x_tensor = torch.from_numpy(x.reshape(-1, 1)).float()
+    y_tensor = torch.from_numpy(y_data.reshape(-1, 1)).float()
+
+    # Print the noise tensor
+    print(noise_tensor)
+
+    # function as model TASK4
+
+    class MyModel(nn.Module):
+        def __init__(self):
+            super(MyModel, self).__init__()
+            self.fc1 = nn.Linear(1, 32)
+            self.fc2 = nn.Linear(32, 1)
+
+        def forward(self, x):
+            x = torch.relu(self.fc1(x))
+            x = self.fc2(x)
+            return x
+
+    # Create an instance of the model
+    model = MyModel()
+
+    # Define the loss function and optimizer
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+
+    #train the function or the modeled function TASK5
+
+    # Training loop
+    num_epochs = 1000
+    for epoch in range(num_epochs):
+        # Forward pass
+        outputs = model(x_tensor)
+        loss = criterion(outputs, y_tensor)
+
+        # Backward and optimize
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        # Print the loss every few epochs
+        if (epoch + 1) % 100 == 0:
+            print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+
+    # Convert the predicted values to numpy array
+    with torch.no_grad():
+        y_pred_np = model(x_tensor).numpy()
+
+
+
+    #DIFF between ploted trained function data and sinc function data TASK6
+
+    # Plot the original data and the trained data
+    plt.scatter(x, y_pred_np, c='red', label='Trained Data')
+
+    x_curve = np.linspace(x_min, x_max, 1000)
+    y_curve = np.sinc(x_curve)
+
+    plt.plot(x_curve, y_curve, c='green', label='Sinc Function')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title('Trained Data only')
+    plt.legend()
+    plt.show()
+
+
+    plt.scatter(x, y_data, c='blue', label='Original Data')
+    plt.scatter(x, y_pred_np, c='red', label='Trained Data')
+    x_curve = np.linspace(x_min, x_max, 1000)
+    y_curve = np.sinc(x_curve)
+    plt.plot(x_curve, y_curve, c='green', label='Sinc Function')
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.title('Trained Data vs Original Data')
+    plt.legend()
+    plt.show()
+
+
+[]
+
+    tensor([-0.0672, -0.0938,  0.1031, -0.0375,  0.0180, -0.1599,  0.0433,  0.0060,
+            -0.0777,  0.1289, -0.0538, -0.0651,  0.2521,  0.0910,  0.0344, -0.1466,
+             0.0187, -0.1157, -0.0072,  0.0454,  0.0158, -0.0052, -0.0559, -0.0902,
+             0.1050,  0.0455, -0.0241,  0.0014,  0.0191, -0.1791,  0.0904, -0.0964,
+            -0.0056, -0.0175, -0.0673, -0.0399, -0.1219, -0.0970, -0.0348, -0.0088,
+            -0.1307,  0.0041, -0.0496, -0.0867, -0.0509,  0.0670, -0.2009, -0.1328,
+            -0.1551, -0.1250,  0.0563,  0.0764,  0.0367,  0.0351, -0.0401, -0.0684,
+             0.1173,  0.0923,  0.1093,  0.0539, -0.1113, -0.0527, -0.0198, -0.0399,
+             0.0426,  0.0983,  0.0836,  0.0908, -0.1095, -0.1298, -0.1086,  0.0389,
+             0.0964,  0.0943, -0.0204,  0.0097,  0.1424,  0.1214, -0.1086,  0.0161,
+            -0.1452, -0.0347, -0.0101, -0.2556, -0.1536,  0.0996, -0.0053,  0.1218,
+             0.1092,  0.1377, -0.1164, -0.0462, -0.0666, -0.1222, -0.1315,  0.0638,
+             0.0272,  0.0013,  0.0956,  0.1418, -0.1500,  0.0621, -0.2739,  0.1013,
+            -0.1938,  0.1295, -0.2282, -0.0230, -0.0779,  0.1458, -0.1224,  0.0542,
+             0.1055, -0.0118, -0.0398, -0.0654,  0.0488, -0.1360, -0.0446,  0.0818,
+            -0.1109, -0.0684,  0.0851, -0.0755,  0.1186,  0.1360, -0.0787,  0.0152,
+            -0.2055, -0.1247,  0.1075,  0.1365,  0.1071, -0.0249,  0.0549, -0.0723,
+            -0.0844,  0.2345, -0.0283, -0.0069, -0.0693, -0.0427,  0.0204,  0.0141,
+            -0.2030,  0.0024, -0.1846,  0.0971,  0.0150,  0.0162,  0.1511, -0.1449,
+            -0.0531,  0.1572, -0.0242, -0.0821,  0.0310,  0.1637, -0.1181,  0.1858,
+             0.0497,  0.1402, -0.1536,  0.0755,  0.0625,  0.0186, -0.0849, -0.1267,
+            -0.0004, -0.0312,  0.0095,  0.0816, -0.0826, -0.0006, -0.0791, -0.0104,
+            -0.1346,  0.0532, -0.0494, -0.0235,  0.1456,  0.1196,  0.0220, -0.0482,
+            -0.0633, -0.1103, -0.0482,  0.0295,  0.0949,  0.0912,  0.0148, -0.0802,
+            -0.0241,  0.0112, -0.1088,  0.0749,  0.0807,  0.0316, -0.1219, -0.0758])
+    Epoch [100/1000], Loss: 0.0553
+    Epoch [200/1000], Loss: 0.0524
+    Epoch [300/1000], Loss: 0.0506
+    Epoch [400/1000], Loss: 0.0488
+    Epoch [500/1000], Loss: 0.0470
+    Epoch [600/1000], Loss: 0.0453
+    Epoch [700/1000], Loss: 0.0436
+    Epoch [800/1000], Loss: 0.0420
+    Epoch [900/1000], Loss: 0.0405
+    Epoch [1000/1000], Loss: 0.0391
+
+[]
+
+[]
